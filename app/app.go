@@ -1,13 +1,24 @@
 package zettel_bot
 
 import (
-	// "bytes"
 	"log"
+	"os"
+	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-func Serve(token string) {
+
+type App struct {
+	Client *DBClient
+	Token string
+	Storage *Storage
+}
+
+
+func Serve(token string, app *App) {
+	os.Setenv("APP_KEY", "0hhdn7ckg30joxw")
+	os.Setenv("APP_SECRET", "rp4khokiuqkohl9")
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Panic(err)
@@ -20,26 +31,52 @@ func Serve(token string) {
 	u.Timeout = 60
 
 	updates := bot.GetUpdatesChan(u)
-
+	setCommands := tgbotapi.NewSetMyCommands(
+		tgbotapi.BotCommand{
+			Command:     "auth",
+			Description: "Get access token",
+		},
+		tgbotapi.BotCommand{
+			Command:     "access_code",
+			Description: "Register token",
+		},
+		tgbotapi.BotCommand{
+			Command:     "zero_links",
+			Description: "Get zero links",
+		},
+	)
+	if _, err := bot.Request(setCommands); err != nil {
+		log.Fatal("Error while try to show commands")
+	}
+	var dbAuth *DropboxAuth = New()
+	go SaveNotes(app.Client, app.Storage)
+	go SaveZeroLinks(app.Client, app.Storage)
 	for update := range updates {
 		if update.Message != nil {
+			CommandHandler(bot, &update, dbAuth, app)
 			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
-			msg.ReplyToMessageID = update.Message.MessageID
-			bot.Send(msg)
-			// buf := &bytes.Buffer{}
-			as := GetZeroLinks()
-			// for _, val := range as {
-			// 	buf.WriteString(val)
-			// 	buf.WriteString("\n")
-			// }
-			new_msg := tgbotapi.NewMessage(update.Message.Chat.ID, as)
-			bot.Send(new_msg)
-
-			md := DownloadFile()
-			md_message := tgbotapi.NewMessage(update.Message.Chat.ID, md)
-			md_message.ParseMode = "Markdown"
-			bot.Send(md_message)
+		}
+		if update.CallbackQuery != nil {
+			zLink := update.CallbackQuery.Data
+			files := getNotesByZeroLink(zLink, app.Storage)
+			for _, file := range files {
+				if len(file) > 0 {
+					msg := tgbotapi.NewMessage(update.CallbackQuery.Message.Chat.ID, file)
+					msg.ParseMode = "Markdown"
+					bot.Send(msg)
+				}
+			}
 		}
 	}
+}
+
+func getNotesByZeroLink(zLink string, storage *Storage) []string {
+	allFiles := storage.Notes
+	files := make([]string, 0, len(allFiles))
+	for _, file := range allFiles {
+		if strings.Contains(file, zLink) {
+			files = append(files, file)
+		}
+	}
+	return files
 }
