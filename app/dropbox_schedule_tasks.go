@@ -1,19 +1,19 @@
 package zettel_bot
 
 import (
+	"log"
 	"regexp"
 	"sort"
-	"time"
-	"log"
 	"strings"
+	"time"
 
 	"github.com/dropbox/dropbox-sdk-go-unofficial/v6/dropbox/files"
+	"github.com/go-redis/redis"
 )
 
 type Storage struct {
-	Notes []string
-	ZeroLinks []string
 	LifetimeSecond int
+	RedisClient *redis.Client
 }
 
 func SaveZeroLinks(dropboxClient *DBClient, storage *Storage) {
@@ -41,7 +41,7 @@ func SaveZeroLinks(dropboxClient *DBClient, storage *Storage) {
 				}
 			}
 			sort.Strings(z_link_name)
-			storage.ZeroLinks = z_link_name
+			storage.RedisClient.SAdd("zero_links", z_link_name)
 			log.Println("Ready to export zero links")
 		}
 		time.Sleep(time.Second * time.Duration(storage.LifetimeSecond))
@@ -52,7 +52,7 @@ func SaveNotes(dropboxClient *DBClient, storage *Storage) {
 	for {
 		client := *dropboxClient
 		if client.IsInitialized() {
-			storage.Notes = getNotes(client)
+			storage.RedisClient.SAdd("notes", getNotes(client))
 			log.Println("Ready to export notes")	
 		}
 		time.Sleep(time.Second * time.Duration(storage.LifetimeSecond))

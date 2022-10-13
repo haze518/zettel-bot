@@ -71,7 +71,10 @@ func Serve(token string, app *App) {
 }
 
 func getNotesByZeroLink(zLink string, storage *Storage) []string {
-	allFiles := storage.Notes
+	allFiles, err := storage.RedisClient.SMembers("notes").Result()
+	if err != nil {
+		log.Println("No data in redis")
+	}
 	files := make([]string, 0, len(allFiles))
 	for _, file := range allFiles {
 		if strings.Contains(file, zLink) {

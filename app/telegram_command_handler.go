@@ -32,7 +32,10 @@ func CommandHandler(
 			bot.Send(msg)
 		}
 	case "zero_links":
-		zLinks := app.Storage.ZeroLinks
+		zLinks, err := app.Storage.RedisClient.SMembers("zero_links").Result()
+		if err != nil {
+			log.Println("Error while loading zero links")
+		}
 		msg := tgbotapi.NewMessage(update.Message.Chat.ID, "ZeroLinks:")
 		msg.ReplyMarkup = getKeyboardButton(zLinks)
 		bot.Send(msg)

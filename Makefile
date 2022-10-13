@@ -4,4 +4,8 @@ build:
 
 .PHONY: run
 run:
-	docker run zettel
+	docker-compose up --remove-orphans $(options)
+
+.PHONY: stop
+stop:
+	docker-compose down --remove-orphans $(options)
