@@ -1,3 +1,7 @@
 .PHONY: build
 build:
-	go build -v .
+	docker build -t zettel .
+
+.PHONY: run
+run:
+	docker run zettel
