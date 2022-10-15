@@ -13,7 +13,11 @@ services:
     build: .
     depends_on:
       - cache
-    restart: always
+    environment:
+      - "APP_KEY=${ZETTEL_APP_KEY}"
+      - "APP_SECRET=${ZETTEL_APP_SECRET}"
+    ports: 
+      - 5000:5000
     command: './zettel-bot'
 
 volumes:

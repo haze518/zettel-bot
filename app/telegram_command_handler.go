@@ -32,7 +32,8 @@ func CommandHandler(
 			bot.Send(msg)
 		}
 	case "zero_links":
-		zLinks, err := app.Storage.RedisClient.SMembers("zero_links").Result()
+		zLinks, err := app.Storage.RedisClient.LRange("zero_links", 0, -1).Result()
+		log.Println(zLinks)
 		if err != nil {
 			log.Println("Error while loading zero links")
 		}

@@ -10,7 +10,7 @@ func main() {
 	*client = &zettel_bot.DropboxCLient{}
 	storage := &zettel_bot.Storage{LifetimeSecond: 60}
 	cl := redis.NewClient(&redis.Options{
-		Addr: "localhost:6379",
+		Addr: "cache:6379",
 		Password: "",
 		DB: 0,
 	})

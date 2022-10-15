@@ -2,7 +2,6 @@ package zettel_bot
 
 import (
 	"log"
-	"os"
 	"strings"
 
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
@@ -17,8 +16,6 @@ type App struct {
 
 
 func Serve(token string, app *App) {
-	os.Setenv("APP_KEY", "0hhdn7ckg30joxw")
-	os.Setenv("APP_SECRET", "rp4khokiuqkohl9")
 	bot, err := tgbotapi.NewBotAPI(token)
 	if err != nil {
 		log.Panic(err)

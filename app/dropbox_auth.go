@@ -40,6 +40,7 @@ func New() *DropboxAuth {
 	if !ok {
 		log.Fatal("There is no CLIENT_SECRET env var")
 	}
+	log.Printf("Client credentilas: \nClient Key: %s\nClient Secret: %s\n", appKey, clientSecret)
 	return &DropboxAuth{appKey: appKey, clientSecret: clientSecret}
 }
 

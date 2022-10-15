@@ -41,7 +41,15 @@ func SaveZeroLinks(dropboxClient *DBClient, storage *Storage) {
 				}
 			}
 			sort.Strings(z_link_name)
-			storage.RedisClient.SAdd("zero_links", z_link_name)
+			pipe := storage.RedisClient.Pipeline()
+			pipe.Del("zero_links")
+			for _, val := range z_link_name {
+				_, err = pipe.RPush("zero_links", val).Result()
+				if err != nil {
+					log.Printf("Error occured while save zero_links\n%s", err)
+				}
+			}
+			pipe.Exec()
 			log.Println("Ready to export zero links")
 		}
 		time.Sleep(time.Second * time.Duration(storage.LifetimeSecond))
@@ -52,8 +60,14 @@ func SaveNotes(dropboxClient *DBClient, storage *Storage) {
 	for {
 		client := *dropboxClient
 		if client.IsInitialized() {
-			storage.RedisClient.SAdd("notes", getNotes(client))
-			log.Println("Ready to export notes")	
+			pipe := storage.RedisClient.Pipeline()
+			pipe.Del("notes")
+			_, err := pipe.SAdd("notes", getNotes(client)).Result()
+			if err != nil {
+				log.Printf("Error occured while save notes\n%s", err)
+			}
+			pipe.Exec()
+			log.Println("Ready to export notes")
 		}
 		time.Sleep(time.Second * time.Duration(storage.LifetimeSecond))
 	}

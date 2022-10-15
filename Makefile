@@ -1,6 +1,6 @@
 .PHONY: build
 build:
-	docker build -t zettel .
+	docker-compose build
 
 .PHONY: run
 run:
