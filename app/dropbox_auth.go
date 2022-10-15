@@ -16,16 +16,14 @@ import (
 const AUTH_URL = "https://www.dropbox.com/oauth2/authorize?client_id=%s&response_type=code"
 const TOKEN_URL = "https://api.dropboxapi.com/oauth2/token"
 
-
 type DropboxAuthResponse struct {
 	AccessToken string `json:"access_token"`
-	TokenType string `json:"token_type"`
-	ExpiresIn int16 `json:"expires_in"`
-	Scope string `json:"scope"`
-	Uid string `json:"uid"`
-	AccountId string `json:"account_id"`
+	TokenType   string `json:"token_type"`
+	ExpiresIn   int16  `json:"expires_in"`
+	Scope       string `json:"scope"`
+	Uid         string `json:"uid"`
+	AccountId   string `json:"account_id"`
 }
-
 
 type DropboxAuth struct {
 	appKey, clientSecret string
@@ -80,7 +78,7 @@ func (d *DropboxAuth) getAccessToken(authCode string) (*DropboxAuthResponse, err
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
 		return result, err
-	}	
+	}
 	json.Unmarshal(body, result)
 	return result, nil
 }

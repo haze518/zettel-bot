@@ -13,7 +13,7 @@ import (
 
 type Storage struct {
 	LifetimeSecond int
-	RedisClient *redis.Client
+	RedisClient    *redis.Client
 }
 
 func SaveZeroLinks(dropboxClient *DBClient, storage *Storage) {
@@ -27,8 +27,8 @@ func SaveZeroLinks(dropboxClient *DBClient, storage *Storage) {
 			var file_string []string
 			for _, entry := range res.Entries {
 				switch f := entry.(type) {
-					case *files.FileMetadata:
-						file_string = append(file_string, f.PathDisplay)
+				case *files.FileMetadata:
+					file_string = append(file_string, f.PathDisplay)
 				}
 			}
 			z_link_name := make([]string, 0, len(file_string))
@@ -37,7 +37,7 @@ func SaveZeroLinks(dropboxClient *DBClient, storage *Storage) {
 				z_link := re.FindString(f)
 				if len(z_link) > 0 {
 					z_link = z_link[:len(z_link)-3]
-					z_link_name = append(z_link_name, z_link)	
+					z_link_name = append(z_link_name, z_link)
 				}
 			}
 			sort.Strings(z_link_name)
@@ -81,8 +81,8 @@ func getNotes(dropboxClient DBClient) []string {
 	}
 	for _, entry := range res.Entries {
 		switch f := entry.(type) {
-			case *files.FileMetadata:
-				paths = append(paths, f.PathDisplay)
+		case *files.FileMetadata:
+			paths = append(paths, f.PathDisplay)
 		}
 	}
 	paths = getMDPaths(paths)
@@ -97,7 +97,7 @@ func getNotes(dropboxClient DBClient) []string {
 	return result
 }
 
-func getMDPaths(s []string) []string{
+func getMDPaths(s []string) []string {
 	result := make([]string, 0)
 	for _, path := range s {
 		if idx := strings.LastIndex(path, ".md"); idx != -1 {

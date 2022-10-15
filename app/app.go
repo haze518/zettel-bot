@@ -7,13 +7,11 @@ import (
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
 )
 
-
 type App struct {
-	Client *DBClient
-	Token string
+	Client  *DBClient
+	Token   string
 	Storage *Storage
 }
-
 
 func Serve(token string, app *App) {
 	bot, err := tgbotapi.NewBotAPI(token)

@@ -7,7 +7,6 @@ import (
 	"github.com/dropbox/dropbox-sdk-go-unofficial/v6/dropbox/files"
 )
 
-
 type DBClient interface {
 	DownloadFolder(path string) (*files.ListFolderResult, error)
 	DownloadFile(path *files.DownloadArg) string
@@ -18,10 +17,9 @@ type DropboxCLient struct {
 	dbx files.Client
 }
 
-
 func NewDropboxClient(token string) *DropboxCLient {
 	config := dropbox.Config{
-		Token: token,
+		Token:    token,
 		LogLevel: dropbox.LogInfo,
 	}
 	client := files.New(config)

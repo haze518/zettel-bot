@@ -1,9 +1,9 @@
 package zettel_bot
 
 import (
-	"strings"
-	"log"
 	tgbotapi "github.com/go-telegram-bot-api/telegram-bot-api/v5"
+	"log"
+	"strings"
 )
 
 func CommandHandler(
@@ -43,7 +43,7 @@ func CommandHandler(
 	}
 }
 
-func getKeyboardButton(rows []string) *tgbotapi.InlineKeyboardMarkup{
+func getKeyboardButton(rows []string) *tgbotapi.InlineKeyboardMarkup {
 	var result [][]tgbotapi.InlineKeyboardButton
 	for _, r := range rows {
 		signle_row := []tgbotapi.InlineKeyboardButton{tgbotapi.NewInlineKeyboardButtonData(r, r)}
